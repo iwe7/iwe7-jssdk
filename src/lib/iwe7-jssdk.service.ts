@@ -5,6 +5,7 @@ import { HttpClient } from '@angular/common/http';
 import { Iwe7ScriptService } from 'iwe7-script';
 import { Injectable, Inject, Optional } from '@angular/core';
 import { Jssdk, JssdkConfigToken, JssdkConfig } from './jssdk';
+declare const wx: any;
 @Injectable({
   providedIn: 'root'
 })
@@ -20,26 +21,35 @@ export class Iwe7JssdkService extends Jssdk {
   }
 
   load() {
-    this.script.load([
-      'https://res.wx.qq.com/open/js/jweixin-1.2.0.js'
-    ]).subscribe(res => {
-      if (res) {
-        super.load();
-      }
-    });
+    if (!wx) {
+      this.script.load([
+        'https://res.wx.qq.com/open/js/jweixin-1.2.0.js'
+      ]).subscribe(res => {
+        if (res) {
+          super.load();
+        }
+      });
+    }
   }
 
   loadObservable(obs: Observable<JssdkConfig>) {
-    this.script.load([
-      'https://res.wx.qq.com/open/js/jweixin-1.2.0.js'
-    ]).pipe(
-      filter(res => !!res),
-      switchMap(res => {
-        return obs;
-      })
-    ).subscribe(cfg => {
-      this.config(cfg);
-      this.ready();
-    });
+    if (!wx) {
+      obs.subscribe(cfg => {
+        this.config(cfg);
+        this.ready();
+      });
+    } else {
+      this.script.load([
+        'https://res.wx.qq.com/open/js/jweixin-1.2.0.js'
+      ]).pipe(
+        filter(res => !!res),
+        switchMap(res => {
+          return obs;
+        })
+      ).subscribe(cfg => {
+        this.config(cfg);
+        this.ready();
+      });
+    }
   }
 }
