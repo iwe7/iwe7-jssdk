@@ -1,9 +1,45 @@
-import { Injectable } from '@angular/core';
-
+import { filter } from 'rxjs/operators';
+import { switchMap } from 'rxjs/operators';
+import { Observable } from 'rxjs';
+import { HttpClient } from '@angular/common/http';
+import { Iwe7ScriptService } from 'iwe7-script';
+import { Injectable, Inject, Optional } from '@angular/core';
+import { Jssdk, JssdkConfigToken, JssdkConfig } from './jssdk';
 @Injectable({
   providedIn: 'root'
 })
-export class Iwe7JssdkService {
+export class Iwe7JssdkService extends Jssdk {
+  constructor(
+    @Inject(JssdkConfigToken)
+    @Optional()
+    _config: JssdkConfig,
+    public script: Iwe7ScriptService,
+    public http: HttpClient
+  ) {
+    super(_config);
+  }
 
-  constructor() { }
+  load() {
+    this.script.load([
+      'https://res.wx.qq.com/open/js/jweixin-1.2.0.js'
+    ]).subscribe(res => {
+      if (res) {
+        super.load();
+      }
+    });
+  }
+
+  loadObservable(obs: Observable<JssdkConfig>) {
+    this.script.load([
+      'https://res.wx.qq.com/open/js/jweixin-1.2.0.js'
+    ]).pipe(
+      filter(res => !!res),
+      switchMap(res => {
+        return obs;
+      })
+    ).subscribe(cfg => {
+      this.config(cfg);
+      this.ready();
+    });
+  }
 }
