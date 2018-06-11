@@ -157,10 +157,10 @@ export abstract class Jssdk extends BehaviorSubject<boolean> implements OnDestro
         });
         return this.getCyc('stopRecord');
     }
-    onVoiceRecordEnd(): Observable<any> {
+    onVoiceRecordEnd(): Observable<string> {
         wx.onVoiceRecordEnd({
             complete: (res) => {
-                this.setCyc('onVoiceRecordEnd', res);
+                this.setCyc('onVoiceRecordEnd', res.localId);
             }
         });
         return this.getCyc('onVoiceRecordEnd');
