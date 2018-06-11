@@ -1,4 +1,4 @@
-import { OnDestroy } from '@angular/core';
+import { OnDestroy, isDevMode } from '@angular/core';
 import { filter, takeUntil } from 'rxjs/operators';
 import { Observable, BehaviorSubject, Subject } from 'rxjs';
 import { InjectionToken } from '@angular/core';
@@ -26,6 +26,7 @@ export const JssdkConfigToken = new InjectionToken<JssdkConfig>('JssdkConfigToke
 declare const wx: any;
 export abstract class Jssdk extends BehaviorSubject<boolean> implements OnDestroy {
     map: Map<string, Subject<any>> = new Map();
+    dev: boolean = isDevMode();
     constructor(public cfg: any) {
         super(false);
     }
@@ -64,19 +65,21 @@ export abstract class Jssdk extends BehaviorSubject<boolean> implements OnDestro
         return wx.config(e);
     }
     ready(): void {
-        wx.ready((res: any) => {
+        if (this.dev) {
             this.next(true);
-        });
+        } else {
+            wx.ready((res: any) => {
+                this.next(true);
+            });
+        }
     }
     error(e: any): void {
         this.complete();
+        this.ngOnDestroy();
     }
     load(): void {
-        console.log(this.cfg);
-        setTimeout(() => {
-            this.config(this.cfg);
-            this.ready();
-        }, 100);
+        this.config(this.cfg);
+        this.ready();
     }
     checkJsApi(e: string[]): Observable<any> {
         wx.checkJsApi({
@@ -149,7 +152,9 @@ export abstract class Jssdk extends BehaviorSubject<boolean> implements OnDestro
     }
     startRecord(): Observable<boolean> {
         wx.startRecord();
-        this.setCyc('startRecord', true);
+        setTimeout(() => {
+            this.setCyc('startRecord', true);
+        }, 0);
         return this.getCyc('startRecord');
     }
     stopRecord(): Observable<string> {
@@ -172,36 +177,42 @@ export abstract class Jssdk extends BehaviorSubject<boolean> implements OnDestro
         wx.playVoice({
             localId: e
         });
-        this.setCyc('playVoice', true);
+        setTimeout(() => {
+            this.setCyc('playVoice', true);
+        }, 0);
         return this.getCyc('playVoice');
     }
     pauseVoice(e: string): Observable<boolean> {
         wx.pauseVoice({
             localId: e
         });
-        this.setCyc('pauseVoice', true);
+        setTimeout(() => {
+            this.setCyc('pauseVoice', true);
+        }, 0);
         return this.getCyc('pauseVoice');
     }
     stopVoice(e: string): Observable<boolean> {
         wx.stopVoice({
             localId: e
         });
-        this.setCyc('stopVoice', true);
+        setTimeout(() => {
+            this.setCyc('stopVoice', true);
+        }, 0);
         return this.getCyc('stopVoice');
     }
-    onVoicePlayEnd(): Observable<any> {
+    onVoicePlayEnd(): Observable<string> {
         wx.onVoicePlayEnd({
             success: (res) => {
-                this.setCyc('onVoicePlayEnd', res);
+                this.setCyc('onVoicePlayEnd', res.localId);
             }
         });
         return this.getCyc('onVoicePlayEnd');
     }
-    uploadVoice(e: any): Observable<any> {
+    uploadVoice(e: any): Observable<string> {
         wx.uploadVoice({
             ...e,
             success: (res) => {
-                this.setCyc('uploadVoice', res);
+                this.setCyc('uploadVoice', res.serverId);
             }
         });
         return this.getCyc('uploadVoice');
@@ -246,7 +257,9 @@ export abstract class Jssdk extends BehaviorSubject<boolean> implements OnDestro
         wx.previewImage({
             ...e
         });
-        this.setCyc('previewImage', true);
+        setTimeout(() => {
+            this.setCyc('previewImage', true);
+        }, 0);
         return this.getCyc('previewImage');
     }
     uploadImage(e: any): Observable<string> {
@@ -258,28 +271,28 @@ export abstract class Jssdk extends BehaviorSubject<boolean> implements OnDestro
         });
         return this.getCyc('uploadImage');
     }
-    downloadImage(e: any): Observable<any> {
+    downloadImage(e: any): Observable<string> {
         wx.downloadImage({
             ...e,
             success: (res) => {
-                this.setCyc('downloadImage', res);
+                this.setCyc('downloadImage', res.localId);
             }
         });
         return this.getCyc('downloadImage');
     }
-    getLocalImgData(e: string): Observable<any> {
+    getLocalImgData(e: string): Observable<string> {
         wx.getLocalImgData({
             localId: e,
             success: (res) => {
-                this.setCyc('getLocalImgData', res);
+                this.setCyc('getLocalImgData', res.localData);
             }
         });
         return this.getCyc('getLocalImgData');
     }
-    getNetworkType(): Observable<any> {
+    getNetworkType(): Observable<string> {
         wx.getNetworkType({
             success: (res) => {
-                this.setCyc('getNetworkType', res);
+                this.setCyc('getNetworkType', res.networkType);
             }
         });
         return this.getCyc('getNetworkType');
@@ -288,46 +301,62 @@ export abstract class Jssdk extends BehaviorSubject<boolean> implements OnDestro
         wx.openLocation({
             ...e
         });
-        this.setCyc('openLocation', true);
+        setTimeout(() => {
+            this.setCyc('openLocation', true);
+        }, 0);
         return this.getCyc('openLocation');
     }
     hideOptionMenu(e: any): Observable<boolean> {
         wx.hideOptionMenu(e);
-        this.setCyc('closeWindow', true);
+        setTimeout(() => {
+            this.setCyc('closeWindow', true);
+        }, 0);
         return this.getCyc('closeWindow');
     }
     showOptionMenu(e: any): Observable<boolean> {
         wx.showOptionMenu(e);
-        this.setCyc('showOptionMenu', true);
+        setTimeout(() => {
+            this.setCyc('showOptionMenu', true);
+        }, 0);
         return this.getCyc('showOptionMenu');
     }
     closeWindow(e: any): Observable<boolean> {
         wx.closeWindow();
-        this.setCyc('closeWindow', true);
+        setTimeout(() => {
+            this.setCyc('closeWindow', true);
+        }, 0);
         return this.getCyc('closeWindow');
     }
     hideMenuItems(e: any): Observable<boolean> {
         wx.hideMenuItems({
             menuList: e
         });
-        this.setCyc('hideMenuItems', true);
+        setTimeout(() => {
+            this.setCyc('hideMenuItems', true);
+        }, 0);
         return this.getCyc('hideMenuItems');
     }
     showMenuItems(e: any): Observable<boolean> {
         wx.showMenuItems({
             menuList: e
         });
-        this.setCyc('showMenuItems', true);
+        setTimeout(() => {
+            this.setCyc('showMenuItems', true);
+        }, 0);
         return this.getCyc('showMenuItems');
     }
     hideAllNonBaseMenuItem(): Observable<boolean> {
         wx.hideAllNonBaseMenuItem();
-        this.setCyc('hideAllNonBaseMenuItem', true);
+        setTimeout(() => {
+            this.setCyc('hideAllNonBaseMenuItem', true);
+        }, 0);
         return this.getCyc('hideAllNonBaseMenuItem');
     }
     showAllNonBaseMenuItem(): Observable<boolean> {
         wx.showAllNonBaseMenuItem();
-        this.setCyc('showAllNonBaseMenuItem', true);
+        setTimeout(() => {
+            this.setCyc('showAllNonBaseMenuItem', true);
+        }, 0);
         return this.getCyc('showAllNonBaseMenuItem');
     }
     scanQRCode(e: any): Observable<any> {
@@ -349,23 +378,25 @@ export abstract class Jssdk extends BehaviorSubject<boolean> implements OnDestro
     }
     openProductSpecificView(e: any): Observable<boolean> {
         wx.openProductSpecificView(e);
-        this.setCyc('openProductSpecificView', true);
+        setTimeout(() => {
+            this.setCyc('openProductSpecificView', true);
+        }, 0);
         return this.getCyc('openProductSpecificView');
     }
-    addCard(e: any): Observable<any> {
+    addCard(e: any): Observable<{ cardId: string, code: string }[]> {
         wx.addCard({
             ...e,
             success: (res) => {
-                this.setCyc('addCard', res);
+                this.setCyc('addCard', res.cardList);
             }
         });
         return this.getCyc('addCard');
     }
-    chooseCard(e: any): Observable<any> {
+    chooseCard(e: any): Observable<{ cardId: string, code: string }[]> {
         wx.chooseCard({
             ...e,
             success: (res) => {
-                this.setCyc('chooseCard', res);
+                this.setCyc('chooseCard', res.cardList);
             }
         });
         return this.getCyc('chooseCard');
@@ -374,7 +405,9 @@ export abstract class Jssdk extends BehaviorSubject<boolean> implements OnDestro
         wx.chooseCard({
             cardList: cardList
         });
-        this.setCyc('openCard', true);
+        setTimeout(() => {
+            this.setCyc('openCard', true);
+        }, 0);
         return this.getCyc('openCard');
     }
     chooseWXPay(e: any): Observable<any> {
