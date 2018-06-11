@@ -6,11 +6,12 @@
 
 
 ### Iwe7JssdkRecordService 录音封装
-| 方法     | 说明                         |
-|--------|----------------------------|
-| record | 开始录音，监听录音完成或停止录音，返回localId |
-| stop   | 停止录音                       |
-
+| 方法              | 说明                         |
+|-----------------|----------------------------|
+| record          | 开始录音，监听录音完成或停止录音，返回localId |
+| startWithUpload | 开始录音，录音结束时上传,放回serverId    |
+| upload          | 上传本地录音到微信服务器，返回serverId      |
+| stop            | 停止录音                       |
 
 ### Iwe7JssdkVoiceService 播放语音封装
 | 方法         | 说明                                              |

@@ -24,6 +24,17 @@ export class Iwe7JssdkRecordService {
             })
         );
     }
+    // 开始录音，录音结束时上传
+    startWithUpload(): Observable<string> {
+        return this.start().pipe(
+            switchMap(localId =>
+                this.iwe7Jssdk.uploadVoice(localId)
+            )
+        );
+    }
+    upload(localId: string): Observable<string> {
+        return this.iwe7Jssdk.uploadVoice(localId);
+    }
     // 停止录音
     stop(): void {
         this.iwe7Jssdk.stopRecord().subscribe();
