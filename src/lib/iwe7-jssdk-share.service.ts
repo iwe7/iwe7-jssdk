@@ -15,11 +15,16 @@ export type Iwe7ShareConfig = {
     providedIn: 'root'
 })
 export class Iwe7JssdkShareService {
+    shareConfig: Iwe7ShareConfig;
     constructor(
         public iwe7Jssdk: Iwe7JssdkService
     ) { }
 
-    share(cfg: Iwe7ShareConfig): Observable<string> {
+    setConfig(cfg: Iwe7ShareConfig) {
+        this.shareConfig = cfg;
+    }
+
+    share(cfg: Iwe7ShareConfig = this.shareConfig): Observable<string> {
         return merge(
             this.iwe7Jssdk.onMenuShareAppMessage(cfg).pipe(
                 map(res => 'app')
