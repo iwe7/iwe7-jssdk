@@ -1,4 +1,4 @@
-### jssdk rxjs 封装
+### jssdk rxjs 封装 Iwe7JssdkService
 | 方法             | 说明                                   |
 |----------------|--------------------------------------|
 | load           | 加载cdn上得jssdk并初始化                     |
