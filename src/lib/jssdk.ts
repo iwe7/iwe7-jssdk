@@ -144,7 +144,7 @@ export abstract class Jssdk extends BehaviorSubject<boolean> implements OnDestro
         });
         return this.getCyc('onMenuShareTimeline');
     }
-    startRecord(e: any): Observable<boolean> {
+    startRecord(): Observable<boolean> {
         wx.startRecord();
         this.setCyc('startRecord', true);
         return this.getCyc('startRecord');
