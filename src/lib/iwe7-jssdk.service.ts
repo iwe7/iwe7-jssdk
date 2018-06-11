@@ -5,6 +5,7 @@ import { HttpClient } from '@angular/common/http';
 import { Iwe7ScriptService } from 'iwe7-script';
 import { Injectable, Inject, Optional } from '@angular/core';
 import { Jssdk, JssdkConfigToken, JssdkConfig } from './jssdk';
+const jssdkUrl: string = 'https://res.wx.qq.com/open/js/jweixin-1.3.2.js';
 declare const wx: any;
 @Injectable({
   providedIn: 'root'
@@ -23,7 +24,7 @@ export class Iwe7JssdkService extends Jssdk {
   load() {
     if (!wx) {
       this.script.load([
-        'https://res.wx.qq.com/open/js/jweixin-1.2.0.js'
+        jssdkUrl
       ]).subscribe(res => {
         if (res) {
           super.load();
@@ -40,7 +41,7 @@ export class Iwe7JssdkService extends Jssdk {
       });
     } else {
       this.script.load([
-        'https://res.wx.qq.com/open/js/jweixin-1.2.0.js'
+        jssdkUrl
       ]).pipe(
         filter(res => !!res),
         switchMap(res => {
