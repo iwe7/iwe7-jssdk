@@ -34,4 +34,15 @@ export class Iwe7JssdkVoiceService {
         this.iwe7Jssdk.pauseVoice(localId).subscribe();
     }
 
+    playServer(serverId: string) {
+        return this.iwe7Jssdk.downloadVoice({
+            serverId: serverId,
+            isShowProgressTips: 0,
+        }).pipe(
+            switchMap(localId => {
+                return this.play(localId);
+            })
+        );
+    }
+
 }

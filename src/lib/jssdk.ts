@@ -203,11 +203,11 @@ export abstract class Jssdk extends BehaviorSubject<boolean> implements OnDestro
         });
         return this.getCyc('uploadVoice');
     }
-    downloadVoice(e: any): Observable<any> {
+    downloadVoice(e: any): Observable<string> {
         wx.downloadVoice({
             ...e,
             success: (res) => {
-                this.setCyc('downloadVoice', res);
+                this.setCyc('downloadVoice', res.localId);
             }
         });
         return this.getCyc('downloadVoice');
