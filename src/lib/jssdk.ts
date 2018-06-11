@@ -72,8 +72,11 @@ export abstract class Jssdk extends BehaviorSubject<boolean> implements OnDestro
         this.complete();
     }
     load(): void {
-        this.config(this.cfg);
-        this.ready();
+        console.log(this.cfg);
+        setTimeout(() => {
+            this.config(this.cfg);
+            this.ready();
+        }, 100);
     }
     checkJsApi(e: string[]): Observable<any> {
         wx.checkJsApi({

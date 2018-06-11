@@ -34,6 +34,8 @@ export class Iwe7JssdkService extends Jssdk {
           super.load();
         }
       });
+    } else {
+      super.load();
     }
   }
 
