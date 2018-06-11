@@ -28,3 +28,9 @@
 | choose          | 选择图片       |
 | chooseAndUpload | 选择并上传微信服务器 |
 | preview         | 预览图片       |
+
+
+### Iwe7JssdkShareService 分享功能封装
+| 方法    | 说明                                         |
+|-------|--------------------------------------------|
+| share | 分享注册及监听，当分享成功是返回分享类型,app,qq,qzone,timeline,weibo |
