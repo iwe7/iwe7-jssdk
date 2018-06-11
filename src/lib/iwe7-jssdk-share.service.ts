@@ -24,7 +24,11 @@ export class Iwe7JssdkShareService {
         this.shareConfig = cfg;
     }
 
-    share(cfg: Iwe7ShareConfig = this.shareConfig): Observable<string> {
+    share(newCfg?: Iwe7ShareConfig): Observable<string> {
+        const cfg = {
+            ...this.shareConfig,
+            ...newCfg
+        };
         return merge(
             this.iwe7Jssdk.onMenuShareAppMessage(cfg).pipe(
                 map(res => 'app')
