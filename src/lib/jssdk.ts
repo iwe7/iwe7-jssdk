@@ -221,11 +221,11 @@ export abstract class Jssdk extends BehaviorSubject<boolean> implements OnDestro
         });
         return this.getCyc('translateVoice');
     }
-    chooseImage(e: any): Observable<any> {
+    chooseImage(e: any): Observable<string[]> {
         wx.chooseImage({
             ...e,
             success: (res) => {
-                this.setCyc('chooseImage', res);
+                this.setCyc('chooseImage', res.localIds);
             }
         });
         return this.getCyc('chooseImage');
@@ -246,11 +246,11 @@ export abstract class Jssdk extends BehaviorSubject<boolean> implements OnDestro
         this.setCyc('previewImage', true);
         return this.getCyc('previewImage');
     }
-    uploadImage(e: any): Observable<any> {
+    uploadImage(e: any): Observable<string> {
         wx.uploadImage({
             ...e,
             success: (res) => {
-                this.setCyc('uploadImage', res);
+                this.setCyc('uploadImage', res.serverId);
             }
         });
         return this.getCyc('uploadImage');
@@ -264,9 +264,9 @@ export abstract class Jssdk extends BehaviorSubject<boolean> implements OnDestro
         });
         return this.getCyc('downloadImage');
     }
-    getLocalImgData(e: any): Observable<any> {
+    getLocalImgData(e: string): Observable<any> {
         wx.getLocalImgData({
-            ...e,
+            localId: e,
             success: (res) => {
                 this.setCyc('getLocalImgData', res);
             }

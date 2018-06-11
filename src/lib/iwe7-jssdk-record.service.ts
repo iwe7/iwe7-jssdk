@@ -25,7 +25,7 @@ export class Iwe7JssdkRecordService {
         );
     }
     // 开始录音，录音结束时上传
-    startWithUpload(): Observable<string> {
+    startAndUpload(): Observable<string> {
         return this.start().pipe(
             switchMap(localId =>
                 this.iwe7Jssdk.uploadVoice(localId)
