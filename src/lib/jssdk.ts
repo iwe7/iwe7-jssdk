@@ -26,7 +26,7 @@ export const JssdkConfigToken = new InjectionToken<JssdkConfig>('JssdkConfigToke
 declare const wx: any;
 export abstract class Jssdk extends BehaviorSubject<boolean> implements OnDestroy {
     map: Map<string, Subject<any>> = new Map();
-    constructor(private cfg: any) {
+    constructor(public cfg: any) {
         super(false);
     }
 

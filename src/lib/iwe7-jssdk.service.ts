@@ -21,6 +21,10 @@ export class Iwe7JssdkService extends Jssdk {
     super(_config);
   }
 
+  setConfig(cfg: any) {
+    this.cfg = cfg;
+  }
+
   load() {
     if (!wx) {
       this.script.load([
