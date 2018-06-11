@@ -3,7 +3,9 @@ import { Iwe7JssdkService } from './iwe7-jssdk.service';
 import { Injectable } from '@angular/core';
 import { takeUntil, switchMap, take, tap } from 'rxjs/operators';
 
-@Injectable()
+@Injectable({
+    providedIn: 'root'
+})
 export class Iwe7JssdkRecordService {
 
     constructor(

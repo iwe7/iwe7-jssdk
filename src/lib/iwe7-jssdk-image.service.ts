@@ -4,7 +4,9 @@ import { Observable, from } from 'rxjs';
 import { Iwe7JssdkService } from './iwe7-jssdk.service';
 import { Injectable } from '@angular/core';
 
-@Injectable()
+@Injectable({
+    providedIn: 'root'
+})
 export class Iwe7JssdkImageService {
     constructor(
         public iwe7Jssdk: Iwe7JssdkService

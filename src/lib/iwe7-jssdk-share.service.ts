@@ -11,7 +11,9 @@ export type Iwe7ShareConfig = {
     type?: string;
     dataUrl?: string;
 };
-@Injectable()
+@Injectable({
+    providedIn: 'root'
+})
 export class Iwe7JssdkShareService {
     constructor(
         public iwe7Jssdk: Iwe7JssdkService

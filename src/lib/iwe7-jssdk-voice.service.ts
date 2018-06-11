@@ -3,7 +3,9 @@ import { switchMap, map } from 'rxjs/operators';
 import { Iwe7JssdkService } from './iwe7-jssdk.service';
 import { Injectable } from '@angular/core';
 
-@Injectable()
+@Injectable({
+    providedIn: 'root'
+})
 export class Iwe7JssdkVoiceService {
     localId: string;
     constructor(
