@@ -22,6 +22,7 @@ export class Iwe7JssdkRecordService {
             this.iwe7Jssdk.getCyc('startRecord', true);
         }, 0);
         return this.iwe7Jssdk.startRecord().pipe(
+            tap(res => console.log('startRecord', res)),
             switchMap(res => {
                 return merge(
                     // 当录音结束时
