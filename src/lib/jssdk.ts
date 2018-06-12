@@ -268,10 +268,11 @@ export abstract class Jssdk extends BehaviorSubject<boolean> implements OnDestro
             });
         });
     }
-    uploadVoice(e: any): Observable<string> {
+    uploadVoice(e: string): Observable<string> {
         return Observable.create(obser => {
             wx.uploadVoice({
-                ...e,
+                localId: e,
+                isShowProgressTips: 1,
                 success: (res) => {
                     obser.next(res.serverId);
                     obser.complete();
@@ -282,6 +283,7 @@ export abstract class Jssdk extends BehaviorSubject<boolean> implements OnDestro
                         obser.complete();
                     } else {
                         obser.error(res);
+                        console.error(res);
                     }
                 }
             });
