@@ -1,4 +1,4 @@
-import { filter } from 'rxjs/operators';
+import { filter, take } from 'rxjs/operators';
 import { Subject } from 'rxjs';
 import { merge, Observable } from 'rxjs';
 import { switchMap, map } from 'rxjs/operators';
@@ -20,7 +20,6 @@ export class Iwe7JssdkVoiceService {
 
     play(localId: string = this.localId): Observable<'end' | 'stop' | 'pause' | string> {
         this.localId = localId;
-        this.stop();
         return this.iwe7Jssdk.playVoice(localId).pipe(
             switchMap(res => {
                 return merge(
@@ -31,7 +30,8 @@ export class Iwe7JssdkVoiceService {
                     // 暂停播放
                     this.pauseVoice.pipe(filter(res => res === localId), map(res => 'pause'))
                 );
-            })
+            }),
+            take(1)
         );
     }
     // 停止播放
