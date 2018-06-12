@@ -73,19 +73,30 @@ export abstract class Jssdk extends BehaviorSubject<boolean> implements OnDestro
             });
         }
     }
-    error(e: any): void {
-        this.complete();
-        this.ngOnDestroy();
+    error(): void {
+        wx.error((res) => {
+            console.log(res);
+            if (this.dev) {
+                // 开发模式下不报错
+            } else {
+                this.complete();
+                this.ngOnDestroy();
+            }
+        });
     }
     load(): void {
         this.config(this.cfg);
         this.ready();
+        this.error();
     }
     checkJsApi(e: string[]): Observable<any> {
         wx.checkJsApi({
             jsApiList: e,
             success: (res) => {
                 this.setCyc('checkJsApi', res);
+            },
+            fail: (res) => {
+                console.log(res);
             }
         });
         return this.getCyc('checkJsApi');
@@ -98,6 +109,9 @@ export abstract class Jssdk extends BehaviorSubject<boolean> implements OnDestro
             },
             cancel: () => {
                 this.setCyc('onMenuShareTimeline', false);
+            },
+            fail: (res) => {
+                console.log(res);
             }
         });
         return this.getCyc('onMenuShareTimeline');
@@ -110,6 +124,9 @@ export abstract class Jssdk extends BehaviorSubject<boolean> implements OnDestro
             },
             cancel: () => {
                 this.setCyc('onMenuShareTimeline', false);
+            },
+            fail: (res) => {
+                console.log(res);
             }
         });
         return this.getCyc('onMenuShareTimeline');
@@ -122,6 +139,9 @@ export abstract class Jssdk extends BehaviorSubject<boolean> implements OnDestro
             },
             cancel: () => {
                 this.setCyc('onMenuShareTimeline', false);
+            },
+            fail: (res) => {
+                console.log(res);
             }
         });
         return this.getCyc('onMenuShareTimeline');
@@ -134,6 +154,9 @@ export abstract class Jssdk extends BehaviorSubject<boolean> implements OnDestro
             },
             cancel: () => {
                 this.setCyc('onMenuShareTimeline', false);
+            },
+            fail: (res) => {
+                console.log(res);
             }
         });
         return this.getCyc('onMenuShareTimeline');
@@ -146,85 +169,144 @@ export abstract class Jssdk extends BehaviorSubject<boolean> implements OnDestro
             },
             cancel: () => {
                 this.setCyc('onMenuShareTimeline', false);
+            },
+            fail: (res) => {
+                console.log(res);
             }
         });
         return this.getCyc('onMenuShareTimeline');
     }
     startRecord(): Observable<boolean> {
-        wx.startRecord();
-        setTimeout(() => {
-            this.setCyc('startRecord', true);
-        }, 0);
-        return this.getCyc('startRecord');
+        return Observable.create(obser => {
+            wx.startRecord();
+            obser.next(true);
+            obser.complete();
+        });
     }
     stopRecord(): Observable<string> {
-        wx.stopRecord({
-            success: (res) => {
-                this.setCyc('stopRecord', res.localId);
-            }
+        return Observable.create(obser => {
+            wx.stopRecord({
+                success: (res) => {
+                    obser.next(res.localId);
+                    obser.complete();
+                },
+                fail: (res) => {
+                    if (this.dev) {
+                        obser.next('localId');
+                        obser.complete();
+                    } else {
+                        obser.error(res);
+                    }
+                }
+            });
         });
-        return this.getCyc('stopRecord');
     }
     onVoiceRecordEnd(): Observable<string> {
-        wx.onVoiceRecordEnd({
-            complete: (res) => {
-                this.setCyc('onVoiceRecordEnd', res.localId);
-            }
+        return Observable.create(obser => {
+            wx.onVoiceRecordEnd({
+                complete: (res) => {
+                    obser.next(res.localId);
+                    obser.complete();
+                },
+                fail: (res: any) => {
+                    if (this.dev) {
+                        setTimeout(() => {
+                            obser.next('localId');
+                            obser.complete();
+                        }, 5000);
+                    } else {
+                        obser.error(res);
+                    }
+                }
+            });
         });
-        return this.getCyc('onVoiceRecordEnd');
     }
-    playVoice(e: string): Observable<boolean> {
-        wx.playVoice({
-            localId: e
+    playVoice(e: string): Observable<string> {
+        return Observable.create(obser => {
+            wx.playVoice({
+                localId: e
+            });
+            obser.next(e);
+            obser.complete();
         });
-        setTimeout(() => {
-            this.setCyc('playVoice', true);
-        }, 0);
-        return this.getCyc('playVoice');
     }
-    pauseVoice(e: string): Observable<boolean> {
-        wx.pauseVoice({
-            localId: e
+    pauseVoice(e: string): Observable<string> {
+        return Observable.create(obser => {
+            wx.pauseVoice({
+                localId: e
+            });
+            obser.next(e);
+            obser.complete();
         });
-        setTimeout(() => {
-            this.setCyc('pauseVoice', true);
-        }, 0);
-        return this.getCyc('pauseVoice');
     }
-    stopVoice(e: string): Observable<boolean> {
-        wx.stopVoice({
-            localId: e
+    stopVoice(e: string): Observable<string> {
+        return Observable.create(obser => {
+            wx.stopVoice({
+                localId: e
+            });
+            obser.next(e);
+            obser.complete();
         });
-        setTimeout(() => {
-            this.setCyc('stopVoice', true);
-        }, 0);
-        return this.getCyc('stopVoice');
     }
     onVoicePlayEnd(): Observable<string> {
-        wx.onVoicePlayEnd({
-            success: (res) => {
-                this.setCyc('onVoicePlayEnd', res.localId);
-            }
+        return Observable.create(obser => {
+            wx.onVoicePlayEnd({
+                success: (res) => {
+                    obser.next(res.localId);
+                    obser.complete();
+                },
+                fail: (err) => {
+                    if (this.dev) {
+                        setTimeout(() => {
+                            obser.next('localId');
+                            obser.complete();
+                        }, 5000);
+                    } else {
+                        obser.error(err);
+                    }
+                }
+            });
         });
-        return this.getCyc('onVoicePlayEnd');
     }
     uploadVoice(e: any): Observable<string> {
-        wx.uploadVoice({
-            ...e,
-            success: (res) => {
-                this.setCyc('uploadVoice', res.serverId);
-            }
+        return Observable.create(obser => {
+            wx.uploadVoice({
+                ...e,
+                success: (res) => {
+                    obser.next(res.serverId);
+                    obser.complete();
+                },
+                fail: (res) => {
+                    if (this.dev) {
+                        obser.next('serverId');
+                        obser.complete();
+                    } else {
+                        obser.error(res);
+                    }
+                }
+            });
         });
-        return this.getCyc('uploadVoice');
     }
     downloadVoice(e: any): Observable<string> {
-        wx.downloadVoice({
-            ...e,
-            success: (res) => {
-                this.setCyc('downloadVoice', res.localId);
-            }
+        return Observable.create(obser => {
+            wx.downloadVoice({
+                ...e,
+                success: (res) => {
+                    obser.next(res.localId);
+                    obser.complete();
+                },
+                fail: (err) => {
+                    if (this.dev) {
+                        setTimeout(() => {
+                            obser.next('localId');
+                            obser.complete();
+                        }, 200);
+                    } else {
+                        obser.error(err);
+                    }
+                }
+            });
         });
-        return this.getCyc('downloadVoice');
     }
     translateVoice(e: any): Observable<any> {
         wx.translateVoice({

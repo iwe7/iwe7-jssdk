@@ -1,47 +1,40 @@
-import { Observable, merge, timer } from 'rxjs';
+import { Subject } from 'rxjs';
+import { filter } from 'rxjs/operators';
+import { Observable, merge } from 'rxjs';
 import { Iwe7JssdkService } from './iwe7-jssdk.service';
 import { Injectable, isDevMode } from '@angular/core';
-import { takeUntil, switchMap, take, tap, map } from 'rxjs/operators';
-
+import { switchMap, tap } from 'rxjs/operators';
+declare const wx: any;
 @Injectable({
     providedIn: 'root'
 })
 export class Iwe7JssdkRecordService {
     dev: boolean = isDevMode();
+
+    isStop: boolean = false;
+    localId: string;
+
+    stop$: Subject<string> = new Subject();
+
     constructor(
         public iwe7Jssdk: Iwe7JssdkService
     ) { }
     // 开始录音
     start(): Observable<string> {
-        if (this.dev) {
-            setTimeout(() => {
-                this.iwe7Jssdk.setCyc('stopRecord', true);
-            }, 5000);
-        }
-        setTimeout(() => {
-            this.iwe7Jssdk.getCyc('startRecord', true);
-        }, 0);
+        this.stop();
         return this.iwe7Jssdk.startRecord().pipe(
-            tap(res => console.log('startRecord', res)),
             switchMap(res => {
+                this.isStop = false;
+                // 如果录音结束
                 return merge(
-                    // 当录音结束时
                     this.iwe7Jssdk.onVoiceRecordEnd(),
-                    // 当停止录音时
-                    this.iwe7Jssdk.getCyc('stopRecord')
-                ).pipe(
-                    take(1)
+                    this.stop$
                 );
             })
         );
     }
     // 开始录音，录音结束时上传
     startAndUpload(): Observable<string> {
-        if (this.dev) {
-            setTimeout(() => {
-                this.iwe7Jssdk.setCyc('uploadVoice', 'serviceId');
-            }, 500);
-        }
         return this.start().pipe(
             switchMap(localId =>
                 this.iwe7Jssdk.uploadVoice(localId)
@@ -49,21 +42,14 @@ export class Iwe7JssdkRecordService {
         );
     }
     upload(localId: string): Observable<string> {
-        if (this.dev) {
-            setTimeout(() => {
-                // 开发者模式下，延迟2秒返回serveId
-                this.iwe7Jssdk.setCyc('uploadVoice', 'serveId');
-            }, 2000);
-        }
         return this.iwe7Jssdk.uploadVoice(localId);
     }
     // 停止录音
-    stop(): void {
-        if (this.dev) {
-            setTimeout(() => {
-                this.iwe7Jssdk.setCyc('stopRecord', 'localId');
-            }, 0);
-        }
-        this.iwe7Jssdk.stopRecord().subscribe();
+    stop() {
+        this.iwe7Jssdk.stopRecord().pipe(
+            tap(localId => {
+                this.stop$.next(localId);
+            })
+        ).subscribe();
     }
 }
